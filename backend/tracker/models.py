@@ -3,7 +3,7 @@ from django.db import models
 from django.utils import timezone
 
 def generate_tracking_number():
-    """Generates a clean tracking number e.g., APP-2026-A1B2C3"""
+    """Generates a clean, unique tracking number e.g., APP-2026-A1B2C3"""
     year = timezone.now().year
     uid = uuid.uuid4().hex[:6].upper()
     return f"APP-{year}-{uid}"
@@ -45,4 +45,4 @@ class Application(models.Model):
     reviewed_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.tracking_number} - {self.applicant_name} ({self.status})"
+        return f"[{self.tracking_number}] {self.applicant_name} - {self.status}"

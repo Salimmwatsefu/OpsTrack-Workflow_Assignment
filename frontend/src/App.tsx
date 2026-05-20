@@ -1,122 +1,109 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+// frontend/src/App.tsx
+import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { LayoutDashboard, FileText, LogOut } from 'lucide-react';
+import { Dashboard } from './pages/Dashboard';
+import { CreateApp } from './pages/CreateApp';
+import { AppDetail } from './pages/AppDetail';
+import { ReviewerLogin } from './components/forms/ReviewerLogin';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: false,
+    },
+  },
+});
 
 function App() {
-  const [count, setCount] = useState(0)
+  // Load initial state from localStorage
+  const [role, setRole] = useState<'applicant' | 'reviewer'>(
+    (localStorage.getItem('opstrack_role') as any) || 'applicant'
+  );
+  const [isReviewerAuth, setIsReviewerAuth] = useState(
+    localStorage.getItem('opstrack_auth') === 'true'
+  );
+
+  // Sync state changes to localStorage
+  useEffect(() => {
+    localStorage.setItem('opstrack_role', role);
+  }, [role]);
+
+  const handleLoginSuccess = () => {
+    setIsReviewerAuth(true);
+    localStorage.setItem('opstrack_auth', 'true');
+  };
+
+  const handleLogout = () => {
+    setIsReviewerAuth(false);
+    localStorage.removeItem('opstrack_auth');
+    setRole('applicant'); // Boot them back to the public view
+  };
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <div className="min-h-screen flex flex-col bg-[#fcfcfc]">
+          
+          {/* Top Navigation */}
+          <nav className="border-b-2 border-primary bg-white px-6 py-4 flex justify-between items-center sticky top-0 z-10">
+            <Link to="/" className="text-xl font-bold tracking-tight flex items-center gap-2">
+              <div className="w-6 h-6 bg-primary text-white flex items-center justify-center font-black text-xs">O</div>
+              OpsTrack
+            </Link>
+            
+            <div className="flex items-center gap-4">
+              {/* Role Switcher */}
+              <div className="flex items-center gap-2 text-sm font-semibold border-2 border-primary p-1 bg-[#fcfcfc]">
+                <button 
+                  onClick={() => setRole('applicant')}
+                  className={`px-3 py-1.5 flex items-center gap-2 transition-colors ${
+                    role === 'applicant' ? 'bg-primary text-white' : 'text-gray-500 hover:text-primary'
+                  }`}
+                >
+                  <FileText size={16} />
+                  Applicant View
+                </button>
+                <button 
+                  onClick={() => setRole('reviewer')}
+                  className={`px-3 py-1.5 flex items-center gap-2 transition-colors ${
+                    role === 'reviewer' ? 'bg-primary text-white' : 'text-gray-500 hover:text-primary'
+                  }`}
+                >
+                  <LayoutDashboard size={16} />
+                  Reviewer Queue
+                </button>
+              </div>
 
-      <div className="ticks"></div>
+              {/* Logout Button (Only visible if authenticated reviewer) */}
+              {role === 'reviewer' && isReviewerAuth && (
+                <button onClick={handleLogout} className="text-gray-500 hover:text-red-600 transition-colors" title="Logout">
+                  <LogOut size={20} strokeWidth={2.5} />
+                </button>
+              )}
+            </div>
+          </nav>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+          {/* Core Content Container */}
+          <main className="flex-1 max-w-5xl w-full mx-auto p-6 md:p-12">
+            {/* The Gatekeeper Logic */}
+            {role === 'reviewer' && !isReviewerAuth ? (
+              <ReviewerLogin onSuccess={handleLoginSuccess} />
+            ) : (
+              <Routes>
+                <Route path="/" element={<Dashboard role={role} />} />
+                <Route path="/application/new" element={<CreateApp />} />
+                <Route path="/application/:idOrTracking" element={<AppDetail role={role} />} />
+              </Routes>
+            )}
+          </main>
+          
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      </BrowserRouter>
+    </QueryClientProvider>
+  );
 }
 
-export default App
+export default App;

@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
+import { ChevronLeft } from 'lucide-react';
 import { api } from '../api/client';
 import { type ApplicationCreatePayload } from '../types';
 import { ApplicationForm } from '../components/forms/ApplicationForm';
@@ -9,31 +10,36 @@ export function CreateApp() {
 
   const mutation = useMutation({
     mutationFn: (data: ApplicationCreatePayload) => api.createApplication(data),
-    onSuccess: (data) => {
-      // Redirect to the newly created application using its tracking number
-      navigate(`/application/${data.tracking_number}`);
-    },
-    onError: (error: any) => {
-      alert(`Error creating application: ${error.message}`);
-    }
+    onSuccess: (data) => navigate(`/application/${data.tracking_number}`),
+    onError: (error: any) => alert(`Something went wrong: ${error.message}`),
   });
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
-      <div>
-        <button onClick={() => navigate(-1)} className="text-sm font-bold underline mb-4 inline-block hover:no-underline">
-          &larr; Back
-        </button>
-        <h1 className="text-3xl font-bold uppercase tracking-tight">New Application Draft</h1>
-        <p className="text-gray-600 mt-2">Fill out the details below. You can save this as a draft and submit it later.</p>
+    <div className="page-container">
+
+      <button
+        onClick={() => navigate(-1)}
+        className="btn btn-ghost"
+        style={{ marginBottom: 28, marginLeft: -8 }}
+      >
+        <ChevronLeft size={16} /> Back
+      </button>
+
+      <div style={{ marginBottom: 40 }}>
+        <div className="page-eyebrow">New Application</div>
+        <h1 className="page-title">Start your application</h1>
+        <p className="page-sub">
+          Fill in the details below. It saves as a draft — you can review before submitting.
+        </p>
       </div>
 
-      <div className="border-2 border-primary p-6 md:p-8 bg-surface shadow-solid">
-        <ApplicationForm 
-          onSubmit={(data) => mutation.mutate(data)} 
-          isLoading={mutation.isPending} 
+      <div className="card" style={{ padding: 36, maxWidth: 700 }}>
+        <ApplicationForm
+          onSubmit={(data) => mutation.mutate(data)}
+          isLoading={mutation.isPending}
         />
       </div>
+
     </div>
   );
 }

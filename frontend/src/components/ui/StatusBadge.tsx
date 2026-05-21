@@ -1,27 +1,16 @@
 import { type AppStatus } from '../../types';
 
 export function StatusBadge({ status }: { status: AppStatus }) {
-  const getStyles = () => {
+  const cls = (() => {
     switch (status) {
-      case 'Approved': 
-        return 'bg-[#ccffcc] text-black border-black';
-      case 'Rejected': 
-        return 'bg-[#ffcccc] text-black border-black';
-      case 'Under Review': 
-        return 'bg-[#ffffcc] text-black border-black';
-      case 'Need More Information': 
-        return 'bg-[#e6ccff] text-black border-black';
-      case 'Submitted': 
-        return 'bg-[#cce5ff] text-black border-black';
-      case 'Draft': 
-      default: 
-        return 'bg-[#f0f0f0] text-black border-black';
+      case 'Approved':              return 'badge badge-approved';
+      case 'Rejected':              return 'badge badge-rejected';
+      case 'Under Review':          return 'badge badge-review';
+      case 'Need More Information': return 'badge badge-info';
+      case 'Submitted':             return 'badge badge-submitted';
+      default:                      return 'badge badge-draft';
     }
-  };
+  })();
 
-  return (
-    <span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider border-2 ${getStyles()}`}>
-      {status}
-    </span>
-  );
+  return <span className={cls}>{status}</span>;
 }

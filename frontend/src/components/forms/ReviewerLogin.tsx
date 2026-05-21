@@ -1,66 +1,102 @@
-// frontend/src/components/forms/ReviewerLogin.tsx
 import { useState } from 'react';
-import { Lock } from 'lucide-react';
 
 interface Props {
   onSuccess: () => void;
 }
 
 export function ReviewerLogin({ onSuccess }: Props) {
-  const [email, setEmail] = useState('');
+  const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError]       = useState('');
+  const [loading, setLoading]   = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Dummy Auth Check
+    setLoading(true);
+    setError('');
+
+    // Simulate a brief network delay so it doesn't feel instant
+    await new Promise((r) => setTimeout(r, 600));
+
     if (email === 'admin@opstrack.com' && password === 'admin123') {
       onSuccess();
     } else {
-      setError('Invalid credentials. Check the README for the admin login.');
+      setError('Those credentials dont match. Check the README for the demo login.');
     }
+
+    setLoading(false);
   };
 
   return (
-    <div className="max-w-md mx-auto mt-20 border-2 border-primary p-8 bg-surface shadow-solid space-y-6 text-center">
-      <div className="flex justify-center mb-4 text-primary">
-        <Lock size={48} strokeWidth={1.5} />
-      </div>
-      <div>
-        <h2 className="text-2xl font-black uppercase tracking-tight">Authorized Access Only</h2>
-        <p className="text-gray-500 text-sm mt-2">Please authenticate to view the reviewer queue.</p>
-      </div>
+    <div className="page-container flex items-start justify-center pt-16">
+      <div className="w-full max-w-sm">
 
-      <form onSubmit={handleLogin} className="space-y-4 text-left">
-        <div className="space-y-1">
-          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500">Admin Email</label>
-          <input 
-            type="email" 
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="input-editorial"
-            placeholder="admin@opstrack.com"
-          />
-        </div>
-        <div className="space-y-1">
-          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500">Password</label>
-          <input 
-            type="password" 
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="input-editorial"
-            placeholder="••••••••"
-          />
+        {/* Icon */}
+        <div className="w-11 h-11 rounded-xl bg-[var(--color-primary)] flex items-center justify-center mb-6 mx-auto">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
         </div>
 
-        {error && <p className="text-red-600 text-sm font-bold bg-red-50 p-2 border border-red-200">{error}</p>}
+        {/* Heading */}
+        <h1 className="page-title text-center mb-1">Reviewer access</h1>
+        <p className="page-sub text-center mb-8">Sign in to access the review queue.</p>
 
-        <button type="submit" className="btn-primary w-full mt-4">
-          Authenticate
-        </button>
-      </form>
+        {/* Form */}
+        <div className="card p-6 space-y-5">
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="field-label" htmlFor="email">Email address</label>
+              <input
+                id="email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="input-field"
+                placeholder="admin@opstrack.com"
+                autoComplete="email"
+              />
+            </div>
+            <div>
+              <label className="field-label" htmlFor="password">Password</label>
+              <input
+                id="password"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="input-field"
+                placeholder="••••••••"
+                autoComplete="current-password"
+              />
+            </div>
+
+            {error && (
+              <div className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3.5 py-2.5">
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary w-full justify-center"
+            >
+              {loading ? 'Signing in…' : 'Sign in'}
+            </button>
+          </form>
+
+          {/* Demo hint */}
+          <div className="pt-1 border-t border-[var(--color-border)]">
+            <p className="text-xs text-[var(--color-muted)] text-center font-mono">
+              admin@opstrack.com / admin123
+            </p>
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }

@@ -80,7 +80,7 @@ export function Dashboard({ role }: Props) {
                 Track your application
               </h2>
               <p style={{ fontSize: 15, color: 'var(--color-muted)', lineHeight: 1.55 }}>
-                Enter your tracking number to see where your submission is in the review process.
+                Enter your tracking number to check your status or pick up where you left off on a saved draft.
               </p>
             </div>
             <form onSubmit={handleTrack} className="flex gap-2" style={{ marginTop: 'auto' }}>
@@ -139,6 +139,7 @@ export function Dashboard({ role }: Props) {
                 <th>Applicant</th>
                 <th>Company</th>
                 <th>Type</th>
+                <th>Created</th>
                 <th>Status</th>
                 <th></th>
               </tr>
@@ -154,6 +155,9 @@ export function Dashboard({ role }: Props) {
                   <td style={{ fontWeight: 500 }}>{app.applicant_name}</td>
                   <td style={{ color: 'var(--color-muted)' }}>{app.company_name}</td>
                   <td style={{ color: 'var(--color-muted)' }}>{app.application_type}</td>
+                  <td style={{ color: 'var(--color-muted)', fontFamily: 'var(--font-mono)', fontSize: 13 }}>
+                    {new Date(app.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </td>
                   <td><StatusBadge status={app.status} /></td>
                   <td>
                     <button
@@ -168,7 +172,7 @@ export function Dashboard({ role }: Props) {
               ))}
               {applications?.length === 0 && (
                 <tr>
-                  <td colSpan={6} style={{ padding: 60, textAlign: 'center', color: 'var(--color-muted)' }}>
+                  <td colSpan={7} style={{ padding: 60, textAlign: 'center', color: 'var(--color-muted)' }}>
                     No applications yet.
                   </td>
                 </tr>

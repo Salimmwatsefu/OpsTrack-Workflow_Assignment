@@ -1,3 +1,5 @@
+**Submitted by:** Salim Mwatsefu Mwarika - sjmwatsefu@gmail.com
+
 # OpsTrack: Application Workflow Tracker
 
 A full-stack workflow tracking application built to manage a strict state-machine lifecycle for organizational applications. It enforces business rules (e.g., preventing edits to an 'Approved' application) using a Django backend API and a modern React/Vite frontend.

@@ -46,7 +46,6 @@ pip install -r requirements.txt
 In the same backend terminal (with your virtual environment activated), initialize the SQLite database:
 
 ```bash
-python manage.py makemigrations
 python manage.py migrate
 ```
 
@@ -76,7 +75,7 @@ Once both servers are running, you can access the different parts of the stack h
 * **Backend API Base:** `http://127.0.0.1:8000/api/applications/`
 * **Interactive API Docs (Swagger UI):** [http://127.0.0.1:8000/api/docs](http://127.0.0.1:8000/api/docs)
 
-For a detailed breakdown of the API endpoints, request payloads, and state-machine rules, please see the [Backend API Documentation (api.md)](./api.md).
+For a detailed breakdown of the API endpoints, request payloads, and state-machine rules, please see the [Backend API Documentation (api.md)](./backend/api.md).
 
 ---
 
@@ -96,6 +95,7 @@ For a detailed breakdown of the API endpoints, request payloads, and state-machi
 3. **Production Infrastructure:** Swap SQLite for PostgreSQL to handle concurrency, and Dockerize both the frontend and backend for unified deployments.
 4. **Audit Logging:** Create an `ApplicationHistory` model to log exactly *who* triggered a state change and *when* it happened for compliance tracking.
 5. **Automated Notifications:** Integrate Celery and Redis to fire off asynchronous email alerts to applicants whenever a reviewer updates their status.
+6. **Mobile Responsiveness:** The UI is currently optimised for desktop. A production version would include a fully responsive layout across all screen sizes.
 
 ---
 
@@ -122,21 +122,21 @@ The full list of applications visible to an authenticated reviewer, showing trac
 
 ---
 
-### Application Detail — Draft
+### Application Detail - Draft
 What an applicant sees when viewing their draft. Edit and Submit actions are available at this stage.
 
 ![Application Detail — Draft](./screenshots/detail-draft.png)
 
 ---
 
-### Application Detail — Under Review
+### Application Detail - Under Review
 What a reviewer sees when an application is ready for a decision. Approve, Request More Information, and Reject actions are shown.
 
-![Application Detail — Under Review](./screenshots/detail-under-review.png)
+![Application Detail - Under Review](./screenshots/detail-under-review.png)
 
 ---
 
-### Application Detail — Reviewer Note
+### Application Detail - Reviewer Note
 After a reviewer requests more information, the applicant sees this amber feedback box with the reviewer's comment alongside the Update and Resubmit actions.
 
-![Application Detail — Reviewer Note](./screenshots/detail-reviewer-note.png)
+![Application Detail - Reviewer Note](./screenshots/detail-reviewer-note.png)

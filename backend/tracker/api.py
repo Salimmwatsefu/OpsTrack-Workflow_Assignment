@@ -17,7 +17,7 @@ def create_application(request, payload: ApplicationCreateIn):
 @router.get("/", response=List[ApplicationOut])
 def list_applications(request):
     """Returns all applications. (For Reviewer View)"""
-    return Application.objects.all().order_by('-created_at')
+    return Application.objects.exclude(status=Application.AppStatus.DRAFT).order_by('-created_at')
 
 @router.get("/{app_id}/", response=ApplicationOut)
 def get_application(request, app_id: int):
